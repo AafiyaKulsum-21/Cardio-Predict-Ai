@@ -2,12 +2,16 @@
 Model Training and Serialization Module for CardioPredict AI.
 Trains and compares multiple classifiers, tunes hyperparameters, evaluates performance,
 generates diagnostic charts, and serializes artifacts via Joblib & Pickle.
+Target convention:
+    1 = Heart Disease / High Risk
+    0 = Healthy / Low Risk
 """
 
 import os
 import json
 import pickle
 import joblib
+import warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -28,6 +32,8 @@ from src.data_preprocessing import (
     load_dataset, validate_and_clean_data,
     prepare_train_test_data, save_scaler, FEATURE_NAMES
 )
+
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 # Configure plot styling
 plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
@@ -88,13 +94,13 @@ def train_and_compare_models(X_train_scaled, y_train, X_test_scaled, y_test):
 def tune_best_model(X_train_scaled, y_train):
     """
     Performs grid search hyperparameter tuning for Random Forest Classifier
-    to maximize clinical recall and F1-score.
+    to maximize clinical recall and F1-score for heart disease detection.
     """
     param_grid = {
         'n_estimators': [100, 150, 200],
-        'max_depth': [None, 5, 10],
-        'min_samples_split': [2, 5],
-        'min_samples_leaf': [1, 2],
+        'max_depth': [None, 4, 6, 8],
+        'min_samples_split': [2, 4, 6],
+        'min_samples_leaf': [1, 2, 3],
         'class_weight': ['balanced', None]
     }
     
@@ -118,7 +124,7 @@ def generate_evaluation_visualizations(model, model_name, df_results, X_test_sca
     metrics_to_plot = ['Accuracy', 'Precision', 'Recall', 'F1_Score', 'ROC_AUC']
     df_melted = df_results.melt(id_vars='Model', value_vars=metrics_to_plot, var_name='Metric', value_name='Score')
     
-    ax = sns.barplot(data=df_melted, x='Model', y='Score', hue='Metric', palette='viridis')
+    ax = sns.barplot(data=df_melted, x='Model', y='Score', hue='Metric', palette='Blues_r')
     plt.title('Algorithm Performance Comparison (Test Set)', fontsize=14, fontweight='bold', pad=12)
     plt.ylabel('Score (0.0 - 1.0)', fontsize=12)
     plt.xlabel('Candidate Classifier', fontsize=12)
@@ -138,8 +144,8 @@ def generate_evaluation_visualizations(model, model_name, df_results, X_test_sca
     plt.figure(figsize=(6, 5))
     sns.heatmap(
         cm, annot=True, fmt='d', cmap='Blues', cbar=False,
-        xticklabels=['No Disease (0)', 'Disease (1)'],
-        yticklabels=['No Disease (0)', 'Disease (1)'],
+        xticklabels=['Healthy (0)', 'Disease (1)'],
+        yticklabels=['Healthy (0)', 'Disease (1)'],
         annot_kws={'size': 14, 'fontweight': 'bold'}
     )
     plt.title(f'Confusion Matrix: {model_name}', fontsize=13, fontweight='bold', pad=12)
@@ -157,7 +163,7 @@ def generate_evaluation_visualizations(model, model_name, df_results, X_test_sca
     auc_score = roc_auc_score(y_test, y_prob)
 
     plt.figure(figsize=(7, 5))
-    plt.plot(fpr, tpr, color='#0284c7', lw=2.5, label=f'{model_name} (AUC = {auc_score:.3f})')
+    plt.plot(fpr, tpr, color='#2563eb', lw=2.5, label=f'{model_name} (AUC = {auc_score:.3f})')
     plt.plot([0, 1], [0, 1], color='#94a3b8', lw=1.5, linestyle='--', label='Random Chance Baseline')
     plt.xlim([-0.02, 1.0])
     plt.ylim([0.0, 1.05])
@@ -180,7 +186,7 @@ def generate_evaluation_visualizations(model, model_name, df_results, X_test_sca
         }).sort_values(by='Importance', ascending=True)
 
         plt.figure(figsize=(8, 6))
-        plt.barh(feature_df['Feature'], feature_df['Importance'], color='#0ea5e9', edgecolor='#0284c7')
+        plt.barh(feature_df['Feature'], feature_df['Importance'], color='#3b82f6', edgecolor='#1d4ed8')
         plt.title('Cardiovascular Risk Feature Importance Ranking', fontsize=13, fontweight='bold', pad=12)
         plt.xlabel('Relative Importance (Gini Impurity Reduction)', fontsize=11)
         plt.tight_layout()
@@ -211,9 +217,9 @@ def serialize_model_and_metadata(model, scaler, best_params, metrics, model_dir=
     # 3. Model Metadata
     metadata = {
         'model_name': 'Random Forest Classifier',
-        'pipeline_version': '1.0.0',
+        'pipeline_version': '1.1.0',
+        'target_definition': '1 = Heart Disease / High Risk, 0 = Healthy / Low Risk',
         'created_at': datetime.now().isoformat(),
-        'author': 'Aafiya Kulsum',
         'project': 'CardioPredict AI - Capstone Deployment',
         'features': FEATURE_NAMES,
         'best_hyperparameters': best_params,
@@ -239,7 +245,7 @@ def execute_training_pipeline():
 
     X_train, X_test, y_train, y_test, X_train_sc, X_test_sc, scaler = prepare_train_test_data(cleaned)
     save_scaler(scaler)
-    print(f"[2/5] Prepared train set ({X_train_sc.shape[0]} samples) & test set ({X_test_sc.shape[0]} samples).")
+    print(f"[2/5] Prepared train set ({X_train_sc.shape[0]} samples, {y_train.sum()} positive) & test set ({X_test_sc.shape[0]} samples, {y_test.sum()} positive).")
 
     print("[3/5] Benchmarking multiple algorithms (5-Fold Stratified Cross Validation)...")
     comparison_df, _ = train_and_compare_models(X_train_sc, y_train, X_test_sc, y_test)
@@ -264,11 +270,18 @@ def execute_training_pipeline():
     print("\n--- Final Test Set Evaluation ---")
     for k, v in metrics.items():
         print(f"  {k.upper()}: {v * 100:.2f}%")
-    print("\nClassification Report:\n", classification_report(y_test, y_pred, target_names=['No Disease', 'Heart Disease']))
+    print("\nClassification Report:\n", classification_report(y_test, y_pred, target_names=['Healthy / Low Risk', 'Heart Disease / High Risk']))
 
     print("[5/5] Generating diagnostic charts & serializing model artifacts...")
     generate_evaluation_visualizations(tuned_model, 'Random Forest (Tuned)', comparison_df, X_test_sc, y_test)
     serialize_model_and_metadata(tuned_model, scaler, best_params, metrics)
+
+    # Copy plots to app/static/plots
+    import shutil
+    os.makedirs('app/static/plots', exist_ok=True)
+    for f in os.listdir('reports/plots'):
+        if f.endswith('.png'):
+            shutil.copy(os.path.join('reports/plots', f), os.path.join('app/static/plots', f))
 
     print("\n" + "=" * 65)
     print("  TRAINING & SERIALIZATION COMPLETED SUCCESSFULLY!")

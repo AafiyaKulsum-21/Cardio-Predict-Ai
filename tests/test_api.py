@@ -41,7 +41,7 @@ class TestFlaskAPI(unittest.TestCase):
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'CardioPredict', response.data)
-        self.assertIn(b'Aafiya Kulsum', response.data)
+        self.assertIn(b'Clinical Decision Support System', response.data)
 
     def test_model_info_endpoint(self):
         response = self.app.get('/api/models/info')
@@ -83,8 +83,8 @@ class TestFlaskAPI(unittest.TestCase):
     def test_web_form_predict(self):
         response = self.app.post('/predict', data=self.valid_payload)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Coronary Risk Evaluation', response.data)
-        self.assertIn(b'Calculated Risk Probability', response.data)
+        self.assertIn(b'Cardiovascular Risk Report', response.data)
+        self.assertIn(b'Heart Disease Probability', response.data)
 
 
 if __name__ == '__main__':

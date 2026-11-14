@@ -1,8 +1,8 @@
 {
     "model_name": "Random Forest Classifier",
-    "pipeline_version": "1.0.0",
-    "created_at": "2026-11-14T13:21:40.826357",
-    "author": "Aafiya Kulsum",
+    "pipeline_version": "1.1.0",
+    "target_definition": "1 = Heart Disease / High Risk, 0 = Healthy / Low Risk",
+    "created_at": "2026-11-14T13:55:27.160384",
     "project": "CardioPredict AI - Capstone Deployment",
     "features": [
         "age",
@@ -21,17 +21,17 @@
     ],
     "best_hyperparameters": {
         "class_weight": null,
-        "max_depth": null,
-        "min_samples_leaf": 2,
-        "min_samples_split": 5,
+        "max_depth": 4,
+        "min_samples_leaf": 3,
+        "min_samples_split": 2,
         "n_estimators": 100
     },
     "test_metrics": {
-        "accuracy": 0.8197,
-        "precision": 0.775,
-        "recall": 0.9394,
-        "f1_score": 0.8493,
-        "roc_auc": 0.908
+        "accuracy": 0.8033,
+        "precision": 0.8333,
+        "recall": 0.7143,
+        "f1_score": 0.7692,
+        "roc_auc": 0.9015
     },
     "serialization_formats": [
         "joblib",

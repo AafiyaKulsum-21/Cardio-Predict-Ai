@@ -1,6 +1,9 @@
 """
 Data Preprocessing Module for CardioPredict AI.
 Handles data ingestion, validation, splitting, and feature scaling.
+Target convention:
+    1 = Heart Disease / High Cardiac Risk
+    0 = Healthy / Low Cardiac Risk
 """
 
 import os
@@ -48,9 +51,14 @@ def prepare_train_test_data(df: pd.DataFrame, test_size: float = 0.2, random_sta
     """
     Splits features and target into stratified train and test sets,
     and applies standard scaling to numerical features.
+    
+    Target is aligned so that:
+        1 = Heart Disease Present / High Risk
+        0 = Healthy / Low Risk
     """
     X = df[FEATURE_NAMES]
-    y = df[TARGET_NAME]
+    # Invert target from raw CSV where 0 was diseased and 1 was non-diseased
+    y = 1 - df[TARGET_NAME]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
@@ -87,3 +95,4 @@ if __name__ == '__main__':
     X_tr, X_te, y_tr, y_te, X_tr_sc, X_te_sc, sc = prepare_train_test_data(cleaned)
     save_scaler(sc)
     print(f"[INFO] Train samples: {X_tr.shape[0]}, Test samples: {X_te.shape[0]}")
+    print(f"[INFO] Disease cases in train: {y_tr.sum()} ({y_tr.mean()*100:.1f}%)")

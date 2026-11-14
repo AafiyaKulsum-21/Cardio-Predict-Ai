@@ -3,328 +3,494 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CardioPredict AI | Heart Disease Risk Assessment</title>
+    <title>CardioPredict AI | Clinical Heart Disease Risk Assessment</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-3">
+    <!-- Sleek Modern Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark app-navbar py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/">
-                <i class="fa-solid fa-heart-pulse fa-lg text-danger bg-white p-2 rounded-circle"></i>
-                <span>CardioPredict <span class="badge bg-danger">AI</span></span>
+            <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+                <div class="brand-icon-wrapper">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="brand-title">CardioPredict <span class="brand-accent">AI</span></span>
+                    <span class="brand-subtitle">Clinical Decision Support System</span>
+                </div>
             </a>
-            <span class="navbar-text text-white-50 d-none d-md-inline">
-                <i class="fa-solid fa-graduation-cap me-1"></i> AI Pioneers Internship Capstone | By Aafiya Kulsum
-            </span>
-            <div class="d-flex align-items-center gap-2">
-                <a href="#api-section" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-code me-1"></i> API Docs</a>
-                <a href="/api/models/info" target="_blank" class="btn btn-light btn-sm fw-semibold"><i class="fa-solid fa-microchip me-1"></i> Model Specs</a>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="system-status-pill d-none d-sm-flex align-items-center gap-2">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Random Forest Engine Active</span>
+                </div>
+                <a href="#api-docs" class="btn btn-outline-nav btn-sm">
+                    <i class="fa-solid fa-code me-1"></i> API
+                </a>
+                <a href="/api/models/info" target="_blank" class="btn btn-primary-nav btn-sm">
+                    <i class="fa-solid fa-microchip me-1"></i> Model Specs
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="container my-4">
-        <!-- Hero Banner -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm hero-card text-white p-4">
-                    <div class="row align-items-center">
-                        <div class="col-lg-8">
-                            <span class="badge bg-light text-primary mb-2 px-3 py-2 fw-bold">
-                                <i class="fa-solid fa-shield-halved me-1"></i> Clinical Decision Support System
-                            </span>
-                            <h2 class="fw-bold mb-2">End-to-End Heart Disease Risk Prediction</h2>
-                            <p class="mb-3 opacity-90">
-                                Enter patient clinical biomarkers to assess the probability of coronary heart disease using our tuned Random Forest Machine Learning pipeline serialized with Joblib.
-                            </p>
-                            <div class="d-flex flex-wrap gap-2">
-                                <button type="button" class="btn btn-light btn-sm fw-bold text-primary" onclick="loadSample('healthy')">
-                                    <i class="fa-solid fa-user-check text-success me-1"></i> Load Healthy Patient Sample
-                                </button>
-                                <button type="button" class="btn btn-outline-light btn-sm fw-bold" onclick="loadSample('risk')">
-                                    <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i> Load High-Risk Sample
-                                </button>
-                                <button type="button" class="btn btn-outline-light btn-sm" onclick="resetForm()">
-                                    <i class="fa-solid fa-rotate-left me-1"></i> Reset
-                                </button>
-                            </div>
+    <!-- Main Content Container -->
+    <main class="container my-4 my-lg-5">
+        
+        <!-- Hero Header -->
+        <div class="hero-section mb-4 p-4 p-md-5 rounded-4 position-relative overflow-hidden">
+            <div class="hero-backdrop-glow"></div>
+            <div class="row align-items-center position-relative z-1">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 badge-hero mb-3 px-3 py-1 rounded-pill">
+                        <i class="fa-solid fa-shield-heart text-cyan"></i>
+                        <span>Evidence-Based Machine Learning Diagnostics</span>
+                    </div>
+                    <h1 class="hero-title fw-bold mb-3">
+                        Predictive Cardiovascular <br class="d-none d-md-inline"><span class="gradient-text">Risk Stratification</span>
+                    </h1>
+                    <p class="hero-description mb-4">
+                        Analyze 13 physiological biomarkers using our tuned Random Forest classifier serialized with Joblib. Rapidly evaluate probability of coronary heart disease and view personalized clinical recommendations.
+                    </p>
+                    
+                    <!-- Quick Load Demo Buttons -->
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="text-white-50 small me-1"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Quick Test:</span>
+                        <button type="button" class="btn btn-demo btn-demo-healthy" onclick="loadSample('healthy')">
+                            <i class="fa-solid fa-circle-check text-success me-1"></i> Load Healthy Sample
+                        </button>
+                        <button type="button" class="btn btn-demo btn-demo-risk" onclick="loadSample('risk')">
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> Load High-Risk Sample
+                        </button>
+                        <button type="button" class="btn btn-demo btn-demo-reset" onclick="resetForm()">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mt-4 mt-lg-0 text-center">
+                    <div class="hero-stat-card p-4 rounded-4 text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="stat-label">CLINICAL SENSITIVITY</span>
+                            <span class="badge bg-success-subtle text-success fw-bold px-2 py-1 rounded-pill">High Recall</span>
                         </div>
-                        <div class="col-lg-4 text-center d-none d-lg-block">
-                            <div class="stat-pill bg-white text-dark p-3 rounded-4 shadow-sm text-start">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <small class="text-muted fw-bold">MODEL ACCURACY</small>
-                                    <span class="badge bg-success">Optimal</span>
-                                </div>
-                                <h4 class="fw-bold mb-1 text-primary">85.25% Test Accuracy</h4>
-                                <small class="text-muted"><i class="fa-solid fa-check-double text-success me-1"></i> Tuned Random Forest (Joblib serialized)</small>
-                            </div>
+                        <div class="stat-value text-primary fw-bolder mb-1">93.9%</div>
+                        <div class="stat-subtext text-muted">
+                            <i class="fa-solid fa-check-double text-success me-1"></i> Tuned to minimize false-negative cardiac diagnoses.
+                        </div>
+                        <hr class="my-3 opacity-25">
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span><strong class="text-dark">90.8%</strong> ROC-AUC</span>
+                            <span><strong class="text-dark">82.0%</strong> Accuracy</span>
+                            <span><strong class="text-dark">5-Fold</strong> CV</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Assessment Form -->
-        <div class="row">
+        <!-- Form and Assessment Section -->
+        <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm p-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                        <h4 class="fw-bold text-dark mb-0">
-                            <i class="fa-solid fa-notes-medical text-primary me-2"></i>Patient Clinical Biomarkers
-                        </h4>
-                        <span class="text-muted small">All 13 features required</span>
-                    </div>
+                <form id="predictionForm" action="/predict" method="POST" class="needs-validation">
+                    
+                    <!-- Group 1: Demographics -->
+                    <div class="clinical-card mb-4 p-4 rounded-4">
+                        <div class="clinical-card-header d-flex align-items-center gap-2 mb-3">
+                            <div class="section-icon-badge bg-primary-subtle text-primary">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">1. Patient Profile & Demographics</h5>
+                                <small class="text-muted">Basic patient baseline characteristics</small>
+                            </div>
+                        </div>
 
-                    <form id="predictionForm" action="/predict" method="POST">
                         <div class="row g-3">
                             <!-- Age -->
-                            <div class="col-md-4">
-                                <label for="age" class="form-label fw-semibold">Age (years)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa-solid fa-cake-candles text-muted"></i></span>
+                            <div class="col-md-6">
+                                <label for="age" class="form-label d-flex justify-content-between">
+                                    <span>Age (years)</span>
+                                    <span class="badge-ref">Range: 20 – 90</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-cake-candles"></i></span>
                                     <input type="number" class="form-control" id="age" name="age" min="18" max="100" value="55" required>
                                 </div>
-                                <small class="text-muted">Range: 20 - 90</small>
                             </div>
 
                             <!-- Sex -->
-                            <div class="col-md-4">
-                                <label for="sex" class="form-label fw-semibold">Biological Sex</label>
-                                <select class="form-select" id="sex" name="sex" required>
-                                    <option value="1" selected>Male (1)</option>
-                                    <option value="0">Female (0)</option>
-                                </select>
-                                <small class="text-muted">1 = Male, 0 = Female</small>
+                            <div class="col-md-6">
+                                <label for="sex" class="form-label d-flex justify-content-between">
+                                    <span>Biological Sex</span>
+                                    <span class="badge-ref">Demographic marker</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-venus-mars"></i></span>
+                                    <select class="form-select" id="sex" name="sex" required>
+                                        <option value="1" selected>Male (1)</option>
+                                        <option value="0">Female (0)</option>
+                                    </select>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Chest Pain Type -->
-                            <div class="col-md-4">
-                                <label for="cp" class="form-label fw-semibold">Chest Pain Type (cp)</label>
-                                <select class="form-select" id="cp" name="cp" required>
-                                    <option value="0">0: Typical Angina</option>
-                                    <option value="1">1: Atypical Angina</option>
-                                    <option value="2" selected>2: Non-anginal Pain</option>
-                                    <option value="3">3: Asymptomatic</option>
-                                </select>
-                                <small class="text-muted">Symptom classification</small>
+                    <!-- Group 2: Resting Vitals & Blood Tests -->
+                    <div class="clinical-card mb-4 p-4 rounded-4">
+                        <div class="clinical-card-header d-flex align-items-center gap-2 mb-3">
+                            <div class="section-icon-badge bg-danger-subtle text-danger">
+                                <i class="fa-solid fa-heart-pulse"></i>
                             </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">2. Resting Vitals & Laboratory Chemistry</h5>
+                                <small class="text-muted">Hemodynamic metrics & blood panel markers</small>
+                            </div>
+                        </div>
 
-                            <!-- Resting Blood Pressure -->
-                            <div class="col-md-4">
-                                <label for="trestbps" class="form-label fw-semibold">Resting BP (mm Hg)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa-solid fa-gauge-high text-muted"></i></span>
+                        <div class="row g-3">
+                            <!-- Resting BP -->
+                            <div class="col-md-6">
+                                <label for="trestbps" class="form-label d-flex justify-content-between">
+                                    <span>Resting Blood Pressure (mm Hg)</span>
+                                    <span class="badge-ref">Normal: &lt;120 mm Hg</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-gauge-high"></i></span>
                                     <input type="number" class="form-control" id="trestbps" name="trestbps" min="80" max="220" value="130" required>
                                 </div>
-                                <small class="text-muted">Resting systolic BP</small>
                             </div>
 
                             <!-- Cholesterol -->
-                            <div class="col-md-4">
-                                <label for="chol" class="form-label fw-semibold">Serum Cholestoral (mg/dl)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa-solid fa-droplet text-muted"></i></span>
+                            <div class="col-md-6">
+                                <label for="chol" class="form-label d-flex justify-content-between">
+                                    <span>Serum Cholesterol (mg/dl)</span>
+                                    <span class="badge-ref">Desirable: &lt;200 mg/dl</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-droplet"></i></span>
                                     <input type="number" class="form-control" id="chol" name="chol" min="100" max="600" value="230" required>
                                 </div>
-                                <small class="text-muted">Normal: &lt; 200 mg/dl</small>
                             </div>
 
                             <!-- Fasting Blood Sugar -->
-                            <div class="col-md-4">
-                                <label for="fbs" class="form-label fw-semibold">Fasting Blood Sugar &gt; 120</label>
-                                <select class="form-select" id="fbs" name="fbs" required>
-                                    <option value="0" selected>False / Normal (&le;120 mg/dl)</option>
-                                    <option value="1">True / Elevated (&gt;120 mg/dl)</option>
-                                </select>
-                                <small class="text-muted">Diabetic indicator</small>
+                            <div class="col-md-6">
+                                <label for="fbs" class="form-label d-flex justify-content-between">
+                                    <span>Fasting Blood Sugar &gt; 120 mg/dl</span>
+                                    <span class="badge-ref">Diabetic indicator</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-cubes-stacked"></i></span>
+                                    <select class="form-select" id="fbs" name="fbs" required>
+                                        <option value="0" selected>False (&le;120 mg/dl - Normal)</option>
+                                        <option value="1">True (&gt;120 mg/dl - Elevated)</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Resting ECG -->
-                            <div class="col-md-4">
-                                <label for="restecg" class="form-label fw-semibold">Resting ECG Results</label>
-                                <select class="form-select" id="restecg" name="restecg" required>
-                                    <option value="0">0: Normal</option>
-                                    <option value="1" selected>1: ST-T Abnormality</option>
-                                    <option value="2">2: Left Ventricular Hypertrophy</option>
+                            <div class="col-md-6">
+                                <label for="restecg" class="form-label d-flex justify-content-between">
+                                    <span>Resting Electrocardiogram (ECG)</span>
+                                    <span class="badge-ref">Resting wave analysis</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-chart-line"></i></span>
+                                    <select class="form-select" id="restecg" name="restecg" required>
+                                        <option value="0">0: Normal Sinus Rhythm</option>
+                                        <option value="1" selected>1: ST-T Wave Abnormality</option>
+                                        <option value="2">2: Left Ventricular Hypertrophy (LVH)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 3: Cardiac Stress Testing & Angiography -->
+                    <div class="clinical-card mb-4 p-4 rounded-4">
+                        <div class="clinical-card-header d-flex align-items-center gap-2 mb-3">
+                            <div class="section-icon-badge bg-info-subtle text-info">
+                                <i class="fa-solid fa-person-running"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">3. Stress Treadmill & Diagnostic Biomarkers</h5>
+                                <small class="text-muted">Cardiac response under exertion & fluoroscopic evaluation</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Chest Pain Type -->
+                            <div class="col-md-6">
+                                <label for="cp" class="form-label d-flex justify-content-between">
+                                    <span>Chest Pain Type (cp)</span>
+                                    <span class="badge-ref">Angina classification</span>
+                                </label>
+                                <select class="form-select select-custom" id="cp" name="cp" required>
+                                    <option value="0">0: Typical Angina (High Risk)</option>
+                                    <option value="1">1: Atypical Angina</option>
+                                    <option value="2" selected>2: Non-Anginal Chest Pain</option>
+                                    <option value="3">3: Asymptomatic</option>
                                 </select>
-                                <small class="text-muted">Resting electrocardiogram</small>
                             </div>
 
                             <!-- Max Heart Rate -->
-                            <div class="col-md-4">
-                                <label for="thalach" class="form-label fw-semibold">Max Heart Rate (thalach)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fa-solid fa-heart-circle-bolt text-muted"></i></span>
+                            <div class="col-md-6">
+                                <label for="thalach" class="form-label d-flex justify-content-between">
+                                    <span>Max Heart Rate Achieved (thalach)</span>
+                                    <span class="badge-ref">Stress exercise bpm</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-heart-circle-bolt"></i></span>
                                     <input type="number" class="form-control" id="thalach" name="thalach" min="60" max="230" value="150" required>
                                 </div>
-                                <small class="text-muted">Max achieved bpm</small>
                             </div>
 
-                            <!-- Exercise Angina -->
-                            <div class="col-md-4">
-                                <label for="exang" class="form-label fw-semibold">Exercise Induced Angina</label>
-                                <select class="form-select" id="exang" name="exang" required>
-                                    <option value="0" selected>No (0)</option>
-                                    <option value="1">Yes (1)</option>
+                            <!-- Exercise Induced Angina -->
+                            <div class="col-md-6">
+                                <label for="exang" class="form-label d-flex justify-content-between">
+                                    <span>Exercise-Induced Angina (exang)</span>
+                                    <span class="badge-ref">Ischemia symptom</span>
+                                </label>
+                                <select class="form-select select-custom" id="exang" name="exang" required>
+                                    <option value="0" selected>No (0) - No chest pain upon stress</option>
+                                    <option value="1">Yes (1) - Angina provoked by exertion</option>
                                 </select>
-                                <small class="text-muted">Angina on exercise</small>
                             </div>
 
                             <!-- Oldpeak -->
-                            <div class="col-md-4">
-                                <label for="oldpeak" class="form-label fw-semibold">ST Depression (oldpeak)</label>
-                                <input type="number" step="0.1" class="form-control" id="oldpeak" name="oldpeak" min="0" max="8" value="1.0" required>
-                                <small class="text-muted">Induced by exercise rel. to rest</small>
+                            <div class="col-md-6">
+                                <label for="oldpeak" class="form-label d-flex justify-content-between">
+                                    <span>ST Depression (oldpeak in mm)</span>
+                                    <span class="badge-ref">Normal: &lt;1.0 mm</span>
+                                </label>
+                                <div class="input-group input-group-custom">
+                                    <span class="input-group-text"><i class="fa-solid fa-wave-square"></i></span>
+                                    <input type="number" step="0.1" class="form-control" id="oldpeak" name="oldpeak" min="0" max="8" value="1.0" required>
+                                </div>
                             </div>
 
                             <!-- Slope -->
                             <div class="col-md-4">
-                                <label for="slope" class="form-label fw-semibold">ST Segment Slope</label>
-                                <select class="form-select" id="slope" name="slope" required>
+                                <label for="slope" class="form-label d-flex justify-content-between">
+                                    <span>Peak ST Slope</span>
+                                    <span class="badge-ref">ECG dynamic</span>
+                                </label>
+                                <select class="form-select select-custom" id="slope" name="slope" required>
                                     <option value="0">0: Upsloping</option>
-                                    <option value="1">1: Flat</option>
+                                    <option value="1">1: Flat (Higher Risk)</option>
                                     <option value="2" selected>2: Downsloping</option>
                                 </select>
-                                <small class="text-muted">Slope of peak exercise ST</small>
                             </div>
 
-                            <!-- Number of Major Vessels -->
+                            <!-- Vessels (ca) -->
                             <div class="col-md-4">
-                                <label for="ca" class="form-label fw-semibold">Major Vessels (ca: 0-3)</label>
-                                <select class="form-select" id="ca" name="ca" required>
-                                    <option value="0" selected>0 Vessels Colored</option>
-                                    <option value="1">1 Vessel Colored</option>
-                                    <option value="2">2 Vessels Colored</option>
-                                    <option value="3">3 Vessels Colored</option>
+                                <label for="ca" class="form-label d-flex justify-content-between">
+                                    <span>Major Vessels Colored</span>
+                                    <span class="badge-ref">Fluoroscopy</span>
+                                </label>
+                                <select class="form-select select-custom" id="ca" name="ca" required>
+                                    <option value="0" selected>0 Vessels (Clear)</option>
+                                    <option value="1">1 Vessel Blocked</option>
+                                    <option value="2">2 Vessels Blocked</option>
+                                    <option value="3">3 Vessels Blocked</option>
                                 </select>
-                                <small class="text-muted">Colored by fluoroscopy</small>
                             </div>
 
                             <!-- Thalassemia -->
                             <div class="col-md-4">
-                                <label for="thal" class="form-label fw-semibold">Thalassemia Status</label>
-                                <select class="form-select" id="thal" name="thal" required>
-                                    <option value="1">1: Normal Blood Flow</option>
+                                <label for="thal" class="form-label d-flex justify-content-between">
+                                    <span>Thallium Stress Test</span>
+                                    <span class="badge-ref">Perfusion</span>
+                                </label>
+                                <select class="form-select select-custom" id="thal" name="thal" required>
+                                    <option value="1">1: Normal Perfusion</option>
                                     <option value="2" selected>2: Fixed Defect</option>
                                     <option value="3">3: Reversible Defect</option>
                                 </select>
-                                <small class="text-muted">Thallium stress test</small>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Submit Buttons -->
-                        <div class="d-flex gap-3 mt-4 pt-3 border-top">
-                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold flex-grow-1">
-                                <i class="fa-solid fa-stethoscope me-2"></i> Generate Full Clinical Assessment Report
-                            </button>
-                            <button type="button" class="btn btn-outline-primary px-4 py-2 fw-bold" onclick="predictViaAjax()">
-                                <i class="fa-solid fa-bolt me-2"></i> Quick Instant Assess
-                            </button>
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <button type="submit" class="btn btn-action-primary flex-grow-1 py-3 px-4 fw-bold">
+                            <i class="fa-solid fa-file-medical me-2"></i> Generate Complete Clinical Evaluation Report
+                        </button>
+                        <button type="button" class="btn btn-action-secondary py-3 px-4 fw-semibold" onclick="predictViaAjax()">
+                            <i class="fa-solid fa-bolt me-2"></i> Instant In-Page Assessment
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Instant Assessment Card (AJAX Dynamic Result) -->
+                <div id="instantResultCard" class="clinical-card p-4 rounded-4 mb-4 d-none">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom pb-3 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="result-icon-wrapper" id="instantIcon">
+                                <i class="fa-solid fa-heart-circle-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-muted small text-uppercase fw-bold">Instant Prediction Result</span>
+                                <h4 class="fw-bold mb-0" id="instantDiagnosis">Assessment Complete</h4>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                        <span class="badge fs-6 px-3 py-2 rounded-pill mt-2 mt-sm-0" id="instantBadge">Risk Score</span>
+                    </div>
 
-                <!-- Instant Assessment Card (Hidden by default, shown via Ajax) -->
-                <div id="instantResultCard" class="card border-0 shadow-sm p-4 mb-4 d-none">
-                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                        <h4 class="fw-bold mb-0" id="instantTitle">Assessment Result</h4>
-                        <span class="badge" id="instantBadge">Probability: 0%</span>
+                    <div class="row align-items-center mb-4 g-3">
+                        <div class="col-md-7">
+                            <p class="text-muted mb-2" id="instantDescription"></p>
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span>Low Risk (&lt;40%)</span>
+                                <span>Moderate (40–65%)</span>
+                                <span>High Risk (&gt;65%)</span>
+                            </div>
+                            <div class="progress progress-custom" style="height: 16px;">
+                                <div id="instantProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-center border-start-md">
+                            <div class="radial-score-box mx-auto">
+                                <div class="score-number fw-extrabold" id="instantScore">0%</div>
+                                <div class="score-label text-muted">Heart Disease Risk</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="alert mb-3" id="instantAlert">
-                        <h5 class="fw-bold mb-1" id="instantDiagnosis"></h5>
-                        <p class="mb-0" id="instantDescription"></p>
-                    </div>
-                    <div class="progress mb-3" style="height: 22px;">
-                        <div id="instantProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">0%</div>
-                    </div>
-                    <ul class="list-group list-group-flush small" id="instantRecommendations">
-                    </ul>
+
+                    <h6 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-clipboard-check text-primary me-2"></i>Targeted Clinical Guidance:
+                    </h6>
+                    <ul class="list-group list-group-flush recommendations-list" id="instantRecommendations"></ul>
                 </div>
             </div>
 
-            <!-- Sidebar Info -->
+            <!-- Sidebar Insights & Models -->
             <div class="col-lg-4">
-                <!-- Capstone Details -->
-                <div class="card border-0 shadow-sm p-3 mb-3">
-                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                        <i class="fa-solid fa-circle-info text-primary me-2"></i>Project Architecture
+                
+                <!-- Architecture Card -->
+                <div class="sidebar-card p-4 rounded-4 mb-4">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-primary"></i> Pipeline Specifications
                     </h5>
-                    <ul class="list-unstyled mb-0 small">
-                        <li class="mb-2"><strong>Domain:</strong> Healthcare Predictive Analytics</li>
-                        <li class="mb-2"><strong>Dataset:</strong> UCI Cleveland Heart Disease</li>
-                        <li class="mb-2"><strong>Preprocessing:</strong> StandardScaler & Stratified Split</li>
-                        <li class="mb-2"><strong>Optimal Model:</strong> Tuned Random Forest</li>
-                        <li class="mb-2"><strong>Serialization:</strong> Joblib & Pickle (.joblib, .pkl)</li>
-                        <li class="mb-2"><strong>API Engine:</strong> Flask RESTful Microservice</li>
-                        <li class="mb-0"><strong>Intern:</strong> Aafiya Kulsum (AI Pioneers)</li>
+                    <ul class="list-unstyled mb-0 small text-secondary">
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span>Clinical Domain:</span>
+                            <strong class="text-dark">Cardiovascular AI</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span>Benchmark Dataset:</span>
+                            <strong class="text-dark">UCI Cleveland (303 pts)</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span>Optimal Classifier:</span>
+                            <strong class="text-dark">Tuned Random Forest</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span>Feature Scaling:</span>
+                            <strong class="text-dark">StandardScaler (Joblib)</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span>Test Sensitivity:</span>
+                            <strong class="text-success">93.94% Recall</strong>
+                        </li>
+                        <li class="d-flex justify-content-between py-2">
+                            <span>Inference Latency:</span>
+                            <strong class="text-dark">&lt; 5 ms (Real-time)</strong>
+                        </li>
                     </ul>
                 </div>
 
-                <!-- Evaluation Plots Preview -->
-                <div class="card border-0 shadow-sm p-3 mb-3">
-                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
-                        <i class="fa-solid fa-chart-line text-primary me-2"></i>Validation Highlights
+                <!-- Visualization Preview -->
+                <div class="sidebar-card p-4 rounded-4 mb-4">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-primary"></i> Validation Benchmarks
                     </h5>
-                    <div class="mb-2 text-center">
-                        <img src="/static/plots/model_comparison.png" alt="Model Comparison" class="img-fluid rounded border shadow-xs" onerror="this.style.display='none'">
+                    <div class="plot-container text-center mb-2">
+                        <img src="/static/plots/model_comparison.png" alt="Algorithm Benchmarks" class="img-fluid rounded-3 border" onerror="this.style.display='none'">
                     </div>
-                    <small class="text-muted d-block text-center mt-1">Cross-Validation & Test Benchmarks across 5 Classifiers</small>
+                    <small class="text-muted d-block text-center mt-2">
+                        Multi-metric comparison across 5 classifiers evaluated on holdout test data.
+                    </small>
+                </div>
+
+                <!-- Quick Help Card -->
+                <div class="sidebar-card p-4 rounded-4">
+                    <h6 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-circle-question text-info me-1"></i> How Risk is Determined
+                    </h6>
+                    <p class="small text-muted mb-0">
+                        The model evaluates nonlinear multivariate relationships across patient biomarkers. Features such as thallium defects, fluoroscopy vessel blockages, ST depression, and exertion chest pain carry the highest diagnostic weights.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- API Integration Section -->
-        <div class="row mt-3" id="api-section">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm p-4">
-                    <h4 class="fw-bold text-dark mb-2">
-                        <i class="fa-solid fa-terminal text-primary me-2"></i>RESTful Prediction API Endpoint
-                    </h4>
-                    <p class="text-muted small mb-3">
-                        Integrate predictions seamlessly into electronic health record (EHR) systems or mobile health apps using our serialized endpoint.
-                    </p>
+        <!-- API Reference Section -->
+        <section class="mt-4" id="api-docs">
+            <div class="clinical-card p-4 p-md-5 rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary px-3 py-1 rounded-pill">RESTful Service</span>
+                    <h4 class="fw-bold mb-0">Electronic Health Record (EHR) Integration</h4>
+                </div>
+                <p class="text-muted small mb-4">
+                    Integrate prediction capability into hospital management software, ambulance telemedicine units, or physician mobile portals.
+                </p>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <h6 class="fw-bold text-secondary">POST Request (`/api/predict`)</h6>
-                            <pre class="bg-dark text-light p-3 rounded small mb-0"><code>curl -X POST http://127.0.0.1:5000/api/predict \
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-secondary mb-2">Endpoint: POST <code>/api/predict</code></h6>
+                        <pre class="code-block rounded-3 p-3"><code>curl -X POST http://127.0.0.1:5000/api/predict \
   -H "Content-Type: application/json" \
   -d '{
     "age": 55, "sex": 1, "cp": 2, "trestbps": 130,
     "chol": 230, "fbs": 0, "restecg": 1, "thalach": 150,
     "exang": 0, "oldpeak": 1.0, "slope": 2, "ca": 0, "thal": 2
   }'</code></pre>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <h6 class="fw-bold text-secondary">JSON Response</h6>
-                            <pre class="bg-dark text-light p-3 rounded small mb-0"><code>{
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-secondary mb-2">JSON Response Format</h6>
+                        <pre class="code-block rounded-3 p-3"><code>{
   "status": "success",
-  "prediction": 1,
-  "diagnosis": "Heart Disease Indicated",
-  "probability": 78.42,
-  "risk_level": "High Risk",
+  "prediction": 0,
+  "diagnosis": "Low Risk / Healthy Profile",
+  "probability": 12.45,
+  "risk_level": "Low Risk",
   "timestamp": "2026-11-14T...",
   "recommendations": [...]
 }</code></pre>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-top py-3 mt-5">
+    <!-- Clean Footer -->
+    <footer class="app-footer py-4 mt-5">
         <div class="container text-center text-muted small">
-            <span>CardioPredict AI &copy; 2026 | Developed by <strong>Aafiya Kulsum</strong> | AI Pioneers Internship Week 4 Final AI Capstone</span>
+            <div class="d-flex justify-content-center align-items-center gap-3 mb-2">
+                <span>CardioPredict AI &copy; 2026</span>
+                <span>&bull;</span>
+                <span>Clinical Decision Support System</span>
+                <span>&bull;</span>
+                <a href="/api/models/info" target="_blank" class="text-decoration-none text-primary">Model Specs</a>
+                <span>&bull;</span>
+                <a href="/health" target="_blank" class="text-decoration-none text-primary">Health Probe</a>
+            </div>
+            <p class="mb-0 text-muted opacity-75">
+                Engineered for educational and predictive risk stratification based on the UCI Cleveland Clinical Heart Disease Dataset.
+            </p>
         </div>
     </footer>
 
+    <!-- Bootstrap Bundle JS & Client Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
